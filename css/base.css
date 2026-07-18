@@ -1,0 +1,67 @@
+/* Lumen — base.css : reset, fonts, theme variables */
+/* ============ RESET & BASE ============ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Manrope', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  transition: background 0.3s, color 0.3s;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, select { font-family: inherit; color: inherit; }
+canvas { display: block; }
+
+:root {
+  --bg: #0b0c10;
+  --bg-grad: radial-gradient(1200px 600px at 70% -10%, rgba(255,107,53,0.08), transparent 60%),
+             radial-gradient(900px 500px at 10% 110%, rgba(78,205,196,0.06), transparent 60%),
+             #0b0c10;
+  --panel: #14161d;
+  --panel-2: #1a1d26;
+  --panel-3: #20232e;
+  --border: #262932;
+  --border-strong: #353946;
+  --text: #ecedf0;
+  --text-muted: #8b8e98;
+  --text-dim: #5a5d68;
+  --accent: #ff6b35;
+  --accent-hover: #ff8456;
+  --accent-soft: rgba(255,107,53,0.14);
+  --accent-glow: rgba(255,107,53,0.35);
+  --teal: #4ecdc4;
+  --teal-soft: rgba(78,205,196,0.14);
+  --danger: #f25c5c;
+  --success: #5cdb95;
+  --warning: #ffb547;
+  --shadow-lg: 0 18px 50px -12px rgba(0,0,0,0.65);
+  --shadow-md: 0 6px 20px -6px rgba(0,0,0,0.5);
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+[data-theme="light"] {
+  --bg: #f5f6f9;
+  --bg-grad: radial-gradient(1200px 600px at 70% -10%, rgba(255,107,53,0.10), transparent 60%),
+             radial-gradient(900px 500px at 10% 110%, rgba(13,148,136,0.07), transparent 60%),
+             #f5f6f9;
+  --panel: #ffffff;
+  --panel-2: #f7f8fa;
+  --panel-3: #eef0f4;
+  --border: #e4e6ec;
+  --border-strong: #d0d3db;
+  --text: #1a1c20;
+  --text-muted: #6b6e78;
+  --text-dim: #a0a3ad;
+  --accent: #f25419;
+  --accent-hover: #d94615;
+  --accent-soft: rgba(242,84,25,0.10);
+  --accent-glow: rgba(242,84,25,0.25);
+  --teal: #0d9488;
+  --teal-soft: rgba(13,148,136,0.10);
+  --shadow-lg: 0 18px 50px -12px rgba(15,23,42,0.18);
+  --shadow-md: 0 6px 20px -6px rgba(15,23,42,0.12);
+}

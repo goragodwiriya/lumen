@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumen — Browser Image Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</head>
+<body>
+
+<div class="app">
+  <!-- ============ TOPBAR ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </div>
+      <div class="brand-name">Lumen<span>.</span></div>
+    </div>
+
+    <div class="tb-group">
+      <button class="tb-btn" id="btnOpen" data-tip="Open image (Ctrl+O)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <span>Open</span>
+      </button>
+      <button class="tb-btn" id="btnSave" data-tip="Export (Ctrl+S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <span>Export</span>
+      </button>
+    </div>
+
+    <div class="tb-group">
+      <button class="tb-btn icon-only" id="btnUndo" data-tip="Undo (Ctrl+Z)" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6.7 2.8L3 13"/></svg>
+      </button>
+      <button class="tb-btn icon-only" id="btnRedo" data-tip="Redo (Ctrl+Y)" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6.7 2.8L21 13"/></svg>
+      </button>
+      <button class="tb-btn icon-only" id="btnReset" data-tip="Reset all">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+      </button>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="zoom-control">
+      <button id="btnZoomOut" data-tip="Zoom out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <div class="zoom-value" id="zoomValue">100%</div>
+      <button id="btnZoomIn" data-tip="Zoom in">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <button id="btnZoomFit" data-tip="Fit screen (0)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+      </button>
+    </div>
+
+    <div class="tb-group" style="margin-left: 6px;">
+      <button class="tb-btn icon-only" id="btnFullscreen" data-tip="Fullscreen (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+      </button>
+      <button class="theme-toggle" id="btnTheme" data-tip="Toggle theme">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ WORKSPACE ============ -->
+  <div class="workspace">
+    <!-- Left toolbar -->
+    <aside class="left-toolbar" id="leftToolbar">
+      <!-- Tools injected by JS -->
+    </aside>
+
+    <!-- Canvas area -->
+    <div class="canvas-area" id="canvasArea">
+      <div class="ruler-corner" id="rulerCorner"></div>
+      <canvas class="ruler ruler-h" id="rulerH"></canvas>
+      <canvas class="ruler ruler-v" id="rulerV"></canvas>
+      <div class="canvas-wrap" id="canvasWrap">
+        <div class="canvas-stage" id="canvasStage" style="display:none;">
+          <canvas id="mainCanvas"></canvas>
+          <canvas id="overlayCanvas"></canvas>
+          <canvas id="gridCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-illustration">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <h2>Drop an image to begin</h2>
+        <p>A fast, professional image editor that runs entirely in your browser. Adjust, filter, draw, annotate and export — no uploads, no servers.</p>
+        <div class="empty-actions">
+          <button class="primary" id="emptyOpen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Open Image
+          </button>
+          <button class="secondary" id="emptyCamera">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Camera
+          </button>
+          <button class="secondary" id="emptySample">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Sample
+          </button>
+        </div>
+        <div class="empty-hint">
+          <span><kbd>Ctrl</kbd>+<kbd>O</kbd> Open</span>
+          <span><kbd>Ctrl</kbd>+<kbd>V</kbd> Paste</span>
+          <span>Drag & drop</span>
+        </div>
+      </div>
+
+      <!-- Drop overlay -->
+      <div class="drop-overlay" id="dropOverlay">
+        <div class="drop-inner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <h3>Drop to open</h3>
+          <p>JPG, PNG, WebP, GIF, BMP, AVIF, TIFF</p>
+        </div>
+      </div>
+
+      <!-- Navigator -->
+      <div class="navigator hidden" id="navigator">
+        <div class="navigator-title">
+          <span>Navigator</span>
+        </div>
+        <div class="navigator-canvas" id="navigatorCanvas">
+          <canvas id="navCanvas" width="160" height="160"></canvas>
+          <div class="nav-rect" id="navRect"></div>
+        </div>
+      </div>
+
+      <!-- Floating canvas controls -->
+      <div class="canvas-controls" id="canvasControls" style="display:none;">
+        <button id="ccGrid" data-tip="Alignment grid overlay">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </button>
+        <button id="ccRulers" data-tip="Pixel rulers along top/left edges">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 21V11M11 21V7M15 21V11M19 21V7"/></svg>
+        </button>
+        <button id="ccNav" data-tip="Toggle navigator" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </button>
+        <button id="ccOriginal" data-tip="Hold to view original">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <aside class="right-panel" id="rightPanel">
+      <!-- Content injected by JS -->
+    </aside>
+  </div>
+
+  <!-- Mobile toolbar (clone) -->
+  <div class="mobile-toolbar" id="mobileToolbar"></div>
+
+  <!-- ============ STATUS BAR ============ -->
+  <footer class="statusbar">
+    <div class="status-item">
+      <div class="status-dot"></div>
+      <span>Ready</span>
+    </div>
+    <div class="status-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      <span>Zoom: <strong id="statusZoom">100%</strong></span>
+    </div>
+    <div class="status-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <span>Size: <strong id="statusSize">—</strong></span>
+    </div>
+    <div class="status-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+      <span>Pos: <strong id="statusPos">—</strong></span>
+    </div>
+    <div class="status-spacer"></div>
+    <div class="status-item">
+      <span>Tool: <strong id="statusTool">Select</strong></span>
+    </div>
+    <div class="status-item">
+      <span>File: <strong id="statusFile">—</strong></span>
+    </div>
+  </footer>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+<input type="file" id="wmFileInput" accept="image/*" style="display:none">
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modal container -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalContent"></div>
+</div>
+</body>
+</html>
